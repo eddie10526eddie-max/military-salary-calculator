@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>國軍薪資加薪計算機 2026</title>
+<title>2026 國軍薪資計算機｜軍人加薪試算</title>
 
 <style>
 * {
@@ -13,9 +13,9 @@
 
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     background: #f3f4f6;
     color: #1f2937;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .container {
@@ -29,7 +29,7 @@ body {
     border-radius: 18px;
     padding: 22px;
     margin-bottom: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 }
 
 h1 {
@@ -53,8 +53,7 @@ label {
     font-weight: 600;
 }
 
-select,
-input {
+select {
     width: 100%;
     padding: 13px;
     border: 1px solid #d1d5db;
@@ -65,8 +64,8 @@ input {
 
 button {
     width: 100%;
-    padding: 15px;
     margin-top: 22px;
+    padding: 15px;
     border: 0;
     border-radius: 11px;
     background: #111827;
@@ -93,12 +92,11 @@ button {
     line-height: 1.7;
 }
 
-.badge {
-    display: inline-block;
-    background: #e5e7eb;
-    padding: 5px 9px;
-    border-radius: 8px;
-    font-size: 13px;
+.highlight {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
 }
 </style>
 </head>
@@ -109,10 +107,10 @@ button {
 
 <div class="card">
 
-<h1>🇹🇼 國軍薪資／加薪計算機</h1>
+<h1>🇹🇼 國軍薪資計算機</h1>
 
 <p class="subtitle">
-2026 軍人薪資、加薪與加給試算工具
+2026 軍人薪資・加給・加薪試算
 </p>
 
 <label>軍階</label>
@@ -126,41 +124,51 @@ button {
     <option>上校</option>
 </select>
 
-<label>目前月薪（元）</label>
+<label>俸級</label>
 
-<input
-    id="salary"
-    type="number"
-    value="66000"
-    min="0"
-    placeholder="例如：66000"
->
+<select id="level">
+    <option>第1級</option>
+    <option>第2級</option>
+    <option>第3級</option>
+    <option>第4級</option>
+    <option>第5級</option>
+    <option>第6級</option>
+    <option>第7級</option>
+    <option>第8級</option>
+    <option>第9級</option>
+    <option>第10級</option>
+    <option>第11級</option>
+    <option>第12級</option>
+</select>
 
-<label>預計調薪幅度（%）</label>
+<label>志願役</label>
 
-<input
-    id="rate"
-    type="number"
-    value="4"
-    min="0"
-    step="0.1"
->
+<select id="volunteer">
+    <option value="yes">是</option>
+    <option value="no">否</option>
+</select>
 
-<label>其他固定增加（元／月）</label>
+<label>戰鬥部隊</label>
 
-<input
-    id="fixed"
-    type="number"
-    value="0"
-    min="0"
->
+<select id="combat">
+    <option value="none">無</option>
+    <option value="type1">第一類型</option>
+    <option value="type2">第二類型</option>
+    <option value="type3">第三類型</option>
+</select>
+
+<label>主管職務</label>
+
+<select id="manager">
+    <option value="no">否</option>
+    <option value="yes">是</option>
+</select>
 
 <button onclick="calculate()">
-開始計算
+    開始計算
 </button>
 
 </div>
-
 
 <div class="card">
 
@@ -172,65 +180,92 @@ button {
 </div>
 
 <div class="result-row">
-    <span>目前月薪</span>
-    <strong id="oldSalary">$66,000</strong>
+    <span>俸級</span>
+    <strong id="resultLevel">第1級</strong>
 </div>
 
 <div class="result-row">
-    <span>百分比調薪</span>
-    <strong id="percentageIncrease">$2,640</strong>
+    <span>本俸</span>
+    <strong>待官方俸表</strong>
 </div>
 
 <div class="result-row">
-    <span>其他固定增加</span>
-    <strong id="fixedIncrease">$0</strong>
+    <span>專業加給</span>
+    <strong>待官方資料</strong>
 </div>
 
 <div class="result-row">
-    <span>調整後月薪</span>
-    <strong id="newSalary" class="total">
-        $68,640
-    </strong>
+    <span>志願役加給</span>
+    <strong id="volunteerPay">$30,000</strong>
 </div>
 
 <div class="result-row">
-    <span>每月增加</span>
-    <strong id="monthlyIncrease">
-        $2,640
-    </strong>
+    <span>戰鬥部隊加給</span>
+    <strong id="combatPay">$0</strong>
 </div>
 
 <div class="result-row">
-    <span>每年增加</span>
-    <strong id="yearlyIncrease">
-        $31,680
-    </strong>
+    <span>主管職務加給</span>
+    <strong id="managerPay">$0</strong>
+</div>
+
+<div class="highlight">
+
+<div class="result-row">
+    <span>目前可確認加給</span>
+    <strong id="confirmed">$30,000</strong>
+</div>
+
+<div class="result-row">
+    <span>2026/7/1 專業加給調整</span>
+    <strong>+$2,000</strong>
+</div>
+
+<div class="result-row">
+    <span>2026/7/1 主管加給調整</span>
+    <strong>+$2,000</strong>
 </div>
 
 </div>
 
+</div>
 
 <div class="card">
 
-<h2>📌 使用說明</h2>
+<h2>📈 2027 加薪試算</h2>
 
 <p class="note">
-本工具目前為薪資試算原型。
-正式版本將依國防部、行政院及相關法規公布的最新資料更新。
+目前規劃 2027 年實施 4% 通案調薪。
+正式實施仍以政府最終公告及法定程序為準。
+</p>
+
+<div class="result-row">
+    <span>規劃調薪幅度</span>
+    <strong>4%</strong>
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>📌 資料來源與說明</h2>
+
+<p class="note">
+本工具目前為測試版本。
+實際薪資會依軍階、俸級、職務、單位及適用加給而有所不同。
 </p>
 
 <p class="note">
-⚠️ 實際薪資會依軍階、俸級、職務、單位及適用加給而有所不同。
+本網站將依國防部、行政院及相關法規最新資料更新。
 </p>
 
-<p>
-<span class="badge">資料版本：2026</span>
+<p class="note">
+最後更新：2026/08
 </p>
 
 </div>
 
 </div>
-
 
 <script>
 
@@ -243,48 +278,53 @@ function calculate() {
     const rank =
         document.getElementById("rank").value;
 
-    const salary =
-        Number(document.getElementById("salary").value) || 0;
+    const level =
+        document.getElementById("level").value;
 
-    const rate =
-        Number(document.getElementById("rate").value) || 0;
+    const volunteer =
+        document.getElementById("volunteer").value;
 
-    const fixed =
-        Number(document.getElementById("fixed").value) || 0;
+    const combat =
+        document.getElementById("combat").value;
 
-    const percentageIncrease =
-        salary * rate / 100;
+    const manager =
+        document.getElementById("manager").value;
 
-    const newSalary =
-        salary + percentageIncrease + fixed;
+    let volunteerPay = 0;
 
-    const monthlyIncrease =
-        newSalary - salary;
+    if (volunteer === "yes") {
+        volunteerPay = 30000;
+    }
 
-    const yearlyIncrease =
-        monthlyIncrease * 12;
+    let combatPay = 0;
 
+    if (combat === "type3") {
+        combatPay = 4000;
+    }
+
+    let managerPay = 0;
+
+    if (manager === "yes") {
+        managerPay = 2000;
+    }
 
     document.getElementById("resultRank").textContent =
         rank;
 
-    document.getElementById("oldSalary").textContent =
-        money(salary);
+    document.getElementById("resultLevel").textContent =
+        level;
 
-    document.getElementById("percentageIncrease").textContent =
-        money(percentageIncrease);
+    document.getElementById("volunteerPay").textContent =
+        money(volunteerPay);
 
-    document.getElementById("fixedIncrease").textContent =
-        money(fixed);
+    document.getElementById("combatPay").textContent =
+        money(combatPay);
 
-    document.getElementById("newSalary").textContent =
-        money(newSalary);
+    document.getElementById("managerPay").textContent =
+        money(managerPay);
 
-    document.getElementById("monthlyIncrease").textContent =
-        money(monthlyIncrease);
-
-    document.getElementById("yearlyIncrease").textContent =
-        money(yearlyIncrease);
+    document.getElementById("confirmed").textContent =
+        money(volunteerPay + combatPay + managerPay);
 }
 
 calculate();
