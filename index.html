@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-<head><script async src="https://www.googletagmanager.com/gtag/js?id=G-MKX9F6T40K"></script>
+<head>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MKX9F6T40K"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 
@@ -10,10 +13,11 @@ gtag('js', new Date());
 
 gtag('config', 'G-MKX9F6T40K');
 </script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>2026 國軍薪資計算機｜軍人加薪試算</title>
+<title>2026 國軍薪資計算機｜軍人薪資待遇試算</title>
 
 <style>
 * {
@@ -86,8 +90,13 @@ button {
 .result-row {
     display: flex;
     justify-content: space-between;
+    gap: 12px;
     padding: 11px 0;
     border-bottom: 1px solid #e5e7eb;
+}
+
+.result-row strong {
+    text-align: right;
 }
 
 .total {
@@ -107,7 +116,46 @@ button {
     border-radius: 12px;
     margin-top: 15px;
 }
+
+.big-total {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 14px;
+    background: #111827;
+    color: white;
+    text-align: center;
+}
+
+.big-total .label {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.big-total .amount {
+    font-size: 32px;
+    font-weight: 800;
+    margin-top: 5px;
+}
+
+.info {
+    background: #eff6ff;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 15px;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.warning {
+    background: #fff7ed;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 15px;
+    font-size: 13px;
+    line-height: 1.7;
+}
 </style>
+
 </head>
 
 <body>
@@ -119,58 +167,40 @@ button {
 <h1>🇹🇼 國軍薪資計算機</h1>
 
 <p class="subtitle">
-2026 軍人薪資・加給・加薪試算
+2026 國軍薪資・本俸・專業加給・志願役加給・戰鬥部隊加給試算
 </p>
+
+<label>人員類別</label>
+
+<select id="category" onchange="updateRanks()">
+    <option value="general">將官</option>
+    <option value="officer" selected>軍官</option>
+    <option value="nco">士官</option>
+    <option value="soldier">士兵</option>
+</select>
 
 <label>軍階</label>
 
-<select id="rank">
-    <option>少尉</option>
-    <option>中尉</option>
-    <option>上尉</option>
-    <option>少校</option>
-    <option>中校</option>
-    <option>上校</option>
-</select>
+<select id="rank" onchange="updateLevels()"></select>
 
 <label>俸級</label>
 
-<select id="level">
-    <option>第1級</option>
-    <option>第2級</option>
-    <option>第3級</option>
-    <option>第4級</option>
-    <option>第5級</option>
-    <option>第6級</option>
-    <option>第7級</option>
-    <option>第8級</option>
-    <option>第9級</option>
-    <option>第10級</option>
-    <option>第11級</option>
-    <option>第12級</option>
-</select>
+<select id="level"></select>
 
-<label>志願役</label>
+<label>役別</label>
 
-<select id="volunteer">
-    <option value="yes">是</option>
-    <option value="no">否</option>
+<select id="service" onchange="calculate()">
+    <option value="volunteer" selected>志願役</option>
+    <option value="mandatory">義務役</option>
 </select>
 
 <label>戰鬥部隊</label>
 
-<select id="combat">
+<select id="combat" onchange="calculate()">
     <option value="none">無</option>
-    <option value="type1">第一類型</option>
-    <option value="type2">第二類型</option>
-    <option value="type3">第三類型</option>
-</select>
-
-<label>主管職務</label>
-
-<select id="manager">
-    <option value="no">否</option>
-    <option value="yes">是</option>
+    <option value="type1">第一類型｜$12,000</option>
+    <option value="type2">第二類型｜$7,000</option>
+    <option value="type3">第三類型｜$4,000</option>
 </select>
 
 <button onclick="calculate()">
@@ -179,9 +209,15 @@ button {
 
 </div>
 
+
 <div class="card">
 
 <h2>💰 試算結果</h2>
+
+<div class="result-row">
+    <span>人員類別</span>
+    <strong id="resultCategory">軍官</strong>
+</div>
 
 <div class="result-row">
     <span>軍階</span>
@@ -195,17 +231,17 @@ button {
 
 <div class="result-row">
     <span>本俸</span>
-    <strong>待官方俸表</strong>
+    <strong id="basePay">$0</strong>
 </div>
 
 <div class="result-row">
     <span>專業加給</span>
-    <strong>待官方資料</strong>
+    <strong id="professionalPay">$0</strong>
 </div>
 
 <div class="result-row">
     <span>志願役加給</span>
-    <strong id="volunteerPay">$30,000</strong>
+    <strong id="volunteerPay">$0</strong>
 </div>
 
 <div class="result-row">
@@ -214,30 +250,22 @@ button {
 </div>
 
 <div class="result-row">
-    <span>主管職務加給</span>
-    <strong id="managerPay">$0</strong>
+    <span>目前可計算待遇</span>
+    <strong id="currentTotal">$0</strong>
 </div>
 
-<div class="highlight">
-
-<div class="result-row">
-    <span>目前可確認加給</span>
-    <strong id="confirmed">$30,000</strong>
-</div>
-
-<div class="result-row">
-    <span>2026/7/1 專業加給調整</span>
-    <strong>+$2,000</strong>
+<div class="big-total">
+    <div class="label">預估月待遇</div>
+    <div class="amount" id="monthlyTotal">$0</div>
 </div>
 
 <div class="result-row">
-    <span>2026/7/1 主管加給調整</span>
-    <strong>+$2,000</strong>
+    <span>預估年待遇</span>
+    <strong id="annualTotal">$0</strong>
 </div>
 
 </div>
 
-</div>
 
 <div class="card">
 
@@ -245,98 +273,503 @@ button {
 
 <p class="note">
 目前規劃 2027 年實施 4% 通案調薪。
-正式實施仍以政府最終公告及法定程序為準。
+以下僅作為試算，不代表最終法定待遇。
 </p>
 
 <div class="result-row">
-    <span>規劃調薪幅度</span>
-    <strong>4%</strong>
+    <span>目前可計算待遇</span>
+    <strong id="futureBase">$0</strong>
+</div>
+
+<div class="result-row">
+    <span>4% 試算增加</span>
+    <strong id="futureIncrease">$0</strong>
+</div>
+
+<div class="result-row">
+    <span>2027 試算月待遇</span>
+    <strong id="futureTotal">$0</strong>
 </div>
 
 </div>
+
 
 <div class="card">
 
-<h2>📌 資料來源與說明</h2>
+<h2>📌 重要說明</h2>
+
+<div class="info">
+<strong>本俸：</strong>
+依 114 年志願役現役軍人俸額表計算。
+</div>
+
+<div class="info">
+<strong>專業加給：</strong>
+依現階發給，不依俸級計算。2026/7/1 起再增加 2,000 元。
+</div>
+
+<div class="info">
+<strong>志願役加給：</strong>
+2026/1/1 起每月 30,000 元。
+</div>
+
+<div class="info">
+<strong>戰鬥部隊加給：</strong>
+第一類型 12,000 元、第二類型 7,000 元；第三類型自 2026/7/1 起為 4,000 元。
+</div>
+
+<div class="warning">
+<strong>注意：</strong>
+本計算器目前只計算可以明確量化的項目。
+主管職務、地域、勤務、空勤、海勤、電偵、網路戰及其他特殊勤務加給，因適用資格與職務不同，未直接全部納入。
+因此結果為「預估待遇」，不等於實際薪資入帳金額。
+</div>
 
 <p class="note">
-本工具目前為測試版本。
-實際薪資會依軍階、俸級、職務、單位及適用加給而有所不同。
+資料基準：2026/08<br>
+本網站資料會依政府最新公告更新。
 </p>
 
-<p class="note">
-本網站將依國防部、行政院及相關法規最新資料更新。
-</p>
+</div>
+
+
+<div class="card">
+
+<h2>📚 資料來源</h2>
 
 <p class="note">
-最後更新：2026/08
+國防部《軍人待遇條例》<br>
+志願役現役軍人俸額表<br>
+現役軍人專業加給表<br>
+國防部及政府機關待遇調整公告
 </p>
 
 </div>
 
 </div>
+
 
 <script>
 
-function money(number) {
-    return "$" + Math.round(number).toLocaleString("zh-TW");
+/* =========================
+   114年志願役現役軍人俸額表
+   ========================= */
+
+const salaryData = {
+
+    "一級上將": [106320],
+
+    "二級上將": [106320],
+
+    "中將": [
+        51790, 53280, 54770,
+        56250, 57740, 61660
+    ],
+
+    "少將": [
+        45110, 46590, 48080, 49570, 51050,
+        52540, 54020, 55510, 57000, 58480
+    ],
+
+    "上校": [
+        40650, 42140, 43620, 45110, 46590, 48080,
+        49570, 51050, 52540, 54020, 55510, 57000
+    ],
+
+    "中校": [
+        36190, 37310, 38420, 39540, 40650, 41760,
+        42880, 43990, 45110, 46220, 47340, 48450
+    ],
+
+    "少校": [
+        31730, 32850, 33960, 35080, 36190, 37310,
+        38420, 39540, 40650, 41760, 42880, 43990
+    ],
+
+    "上尉": [
+        28020, 29130, 30250, 31360, 32480, 33590,
+        34710, 35820, 36930, 38050, 39160, 40280
+    ],
+
+    "中尉": [
+        24300, 25050, 25790, 26530, 27280,
+        28020, 28760, 29500, 30250, 30990
+    ],
+
+    "少尉": [
+        22070, 22820, 23560, 24300, 25050,
+        25790, 26530, 27280, 28020, 28760
+    ],
+
+    "一等士官長": [
+        28020, 28760, 29500, 30250, 30990,
+        31730, 32480, 33220, 33960, 34710,
+        35450, 36190, 36930, 37680, 38420,
+        39160, 39910, 40650, 41390, 42140
+    ],
+
+    "二等士官長": [
+        24300, 25050, 25790, 26530, 27280,
+        28020, 28760, 29500, 30250, 30990,
+        31730, 32480, 33220, 33960, 34710,
+        35450, 36190, 36930, 37680, 38420
+    ],
+
+    "三等士官長": [
+        22070, 22820, 23560, 24300, 25050,
+        25790, 26530, 27280, 28020, 28760,
+        29500, 30250, 30990, 31730, 32480,
+        33220, 33960, 34710, 35450, 36190
+    ],
+
+    "上士": [
+        20590, 21330, 22070, 22820, 23560, 24300,
+        25050, 25790, 26530, 27280, 28020, 28760
+    ],
+
+    "中士": [
+        16870, 17620, 18360, 19100, 19850, 20590,
+        21330, 22070, 22820, 23560, 24300, 25050
+    ],
+
+    "下士": [
+        12980, 13510, 14030, 14560, 15080, 15610,
+        16130, 16870, 17620, 18360, 19100, 19850
+    ],
+
+    "上等兵": [
+        12170, 12980, 13510, 14030, 14560, 15080
+    ],
+
+    "一等兵": [
+        11360
+    ],
+
+    "二等兵": [
+        10550
+    ]
+};
+
+
+/* =========================
+   114年專業加給
+   115/7/1 起 +2000
+   ========================= */
+
+const professionalBase = {
+
+    "中將": 46640,
+    "少將": 39800,
+    "上校": 34400,
+    "中校": 28980,
+    "少校": 24940,
+    "上尉": 23880,
+    "中尉": 21720,
+    "少尉": 20750,
+
+    "一等士官長": 24940,
+    "二等士官長": 23880,
+    "三等士官長": 21720,
+
+    "上士": 20480,
+    "中士": 20420,
+    "下士": 20340,
+
+    "上等兵": 18310,
+    "一等兵": 17290,
+    "二等兵": 16280
+};
+
+
+/* 2026/7/1 專業加給調增 */
+
+function professionalPay(rank, service) {
+
+    if (service !== "volunteer") {
+        return 0;
+    }
+
+    if (!professionalBase[rank]) {
+        return 0;
+    }
+
+    return professionalBase[rank] + 2000;
 }
 
+
+/* =========================
+   類別與軍階
+   ========================= */
+
+const categoryRanks = {
+
+    general: [
+        "一級上將",
+        "二級上將",
+        "中將",
+        "少將"
+    ],
+
+    officer: [
+        "上校",
+        "中校",
+        "少校",
+        "上尉",
+        "中尉",
+        "少尉"
+    ],
+
+    nco: [
+        "一等士官長",
+        "二等士官長",
+        "三等士官長",
+        "上士",
+        "中士",
+        "下士"
+    ],
+
+    soldier: [
+        "上等兵",
+        "一等兵",
+        "二等兵"
+    ]
+};
+
+
+const categoryNames = {
+
+    general: "將官",
+    officer: "軍官",
+    nco: "士官",
+    soldier: "士兵"
+};
+
+
+/* =========================
+   更新軍階
+   ========================= */
+
+function updateRanks() {
+
+    const category =
+        document.getElementById("category").value;
+
+    const rankSelect =
+        document.getElementById("rank");
+
+    rankSelect.innerHTML = "";
+
+    categoryRanks[category].forEach(rank => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = rank;
+        option.textContent = rank;
+
+        rankSelect.appendChild(option);
+
+    });
+
+    updateLevels();
+
+}
+
+
+/* =========================
+   更新俸級
+   ========================= */
+
+function updateLevels() {
+
+    const rank =
+        document.getElementById("rank").value;
+
+    const levelSelect =
+        document.getElementById("level");
+
+    levelSelect.innerHTML = "";
+
+    const levels =
+        salaryData[rank];
+
+    levels.forEach((pay, index) => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = index;
+
+        option.textContent =
+            "第" + (index + 1) + "級";
+
+        levelSelect.appendChild(option);
+
+    });
+
+    calculate();
+
+}
+
+
+/* =========================
+   金額格式
+   ========================= */
+
+function money(number) {
+
+    return "$" +
+        Math.round(number).toLocaleString("zh-TW");
+
+}
+
+
+/* =========================
+   主要計算
+   ========================= */
+
 function calculate() {
+
+    const category =
+        document.getElementById("category").value;
 
     const rank =
         document.getElementById("rank").value;
 
     const level =
-        document.getElementById("level").value;
+        Number(document.getElementById("level").value);
 
-    const volunteer =
-        document.getElementById("volunteer").value;
+    const service =
+        document.getElementById("service").value;
 
     const combat =
         document.getElementById("combat").value;
 
-    const manager =
-        document.getElementById("manager").value;
+
+    /* 本俸 */
+
+    const basePay =
+        salaryData[rank][level];
+
+
+    /* 專業加給 */
+
+    const proPay =
+        professionalPay(rank, service);
+
+
+    /* 志願役加給 */
 
     let volunteerPay = 0;
 
-    if (volunteer === "yes") {
+    if (service === "volunteer") {
+
         volunteerPay = 30000;
+
     }
+
+
+    /* 戰鬥部隊加給 */
 
     let combatPay = 0;
 
-    if (combat === "type3") {
+    if (combat === "type1") {
+
+        combatPay = 12000;
+
+    } else if (combat === "type2") {
+
+        combatPay = 7000;
+
+    } else if (combat === "type3") {
+
         combatPay = 4000;
+
     }
 
-    let managerPay = 0;
 
-    if (manager === "yes") {
-        managerPay = 2000;
-    }
+    /* 總額 */
 
-    document.getElementById("resultRank").textContent =
+    const currentTotal =
+        basePay +
+        proPay +
+        volunteerPay +
+        combatPay;
+
+
+    const annualTotal =
+        currentTotal * 12;
+
+
+    /* 2027 4% 試算 */
+
+    const futureIncrease =
+        currentTotal * 0.04;
+
+    const futureTotal =
+        currentTotal * 1.04;
+
+
+    /* 顯示 */
+
+    document.getElementById("resultCategory")
+        .textContent =
+        categoryNames[category];
+
+    document.getElementById("resultRank")
+        .textContent =
         rank;
 
-    document.getElementById("resultLevel").textContent =
-        level;
+    document.getElementById("resultLevel")
+        .textContent =
+        "第" + (level + 1) + "級";
 
-    document.getElementById("volunteerPay").textContent =
+    document.getElementById("basePay")
+        .textContent =
+        money(basePay);
+
+    document.getElementById("professionalPay")
+        .textContent =
+        money(proPay);
+
+    document.getElementById("volunteerPay")
+        .textContent =
         money(volunteerPay);
 
-    document.getElementById("combatPay").textContent =
+    document.getElementById("combatPay")
+        .textContent =
         money(combatPay);
 
-    document.getElementById("managerPay").textContent =
-        money(managerPay);
+    document.getElementById("currentTotal")
+        .textContent =
+        money(currentTotal);
 
-    document.getElementById("confirmed").textContent =
-        money(volunteerPay + combatPay + managerPay);
+    document.getElementById("monthlyTotal")
+        .textContent =
+        money(currentTotal);
+
+    document.getElementById("annualTotal")
+        .textContent =
+        money(annualTotal);
+
+    document.getElementById("futureBase")
+        .textContent =
+        money(currentTotal);
+
+    document.getElementById("futureIncrease")
+        .textContent =
+        money(futureIncrease);
+
+    document.getElementById("futureTotal")
+        .textContent =
+        money(futureTotal);
+
 }
 
-calculate();
+
+/* 初始化 */
+
+updateRanks();
 
 </script>
 
